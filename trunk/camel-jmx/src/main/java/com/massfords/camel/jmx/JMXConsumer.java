@@ -22,6 +22,7 @@ import org.apache.camel.impl.DefaultConsumer;
 public class JMXConsumer extends DefaultConsumer implements NotificationListener {
 
 	private MBeanServerConnection mServerConnection;
+	private NotificationXmlFormatter mFormatter = new NotificationXmlFormatter();
 
 	public JMXConsumer(JMXEndpoint aEndpoint, Processor aProcessor) {
 		super(aEndpoint, aProcessor);
@@ -75,11 +76,12 @@ public class JMXConsumer extends DefaultConsumer implements NotificationListener
 		Exchange exchange = getEndpoint().createExchange(ExchangePattern.InOnly);
 		Message message = exchange.getIn();
 		message.setHeader("jmx.handback", aHandback);
-		if (ep.isXML()) {
-		} else {
-			message.setBody(aNotification);
-		}
 		try {
+			if (ep.isXML()) {
+				message.setBody(mFormatter.format(aNotification));
+			} else {
+				message.setBody(aNotification);
+			}
 			getProcessor().process(exchange);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
