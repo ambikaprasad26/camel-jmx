@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<attributeChangeNotification xmlns="http://code.massfords.com/camel-jmx"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <source>TestDomain:name=simpleBean</source>
+    <message>attribute changed</message>
+    <sequence>0</sequence>
+    <timestamp>1262878215000</timestamp>
+    <dateTime>2010-01-07T10:30:15.000-05:00</dateTime>
+    <type>jmx.attribute.change</type>
+    <attributeName>stringValue</attributeName>
+    <attributeType>string</attributeType>
+    <newValue>foo</newValue>
+    <oldValue xsi:nil="true"/>
+</attributeChangeNotification>

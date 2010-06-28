@@ -31,6 +31,8 @@ public class NotificationXmlFormatter {
 		ObjectFactory of = new ObjectFactory();
 		
 		NotificationEventType jaxb = null;
+		
+		boolean wrap = false;
 	
 		if (aNotification instanceof AttributeChangeNotification) {
 			AttributeChangeNotification ac = (AttributeChangeNotification) aNotification;
@@ -38,8 +40,8 @@ public class NotificationXmlFormatter {
 			jaxb = of.createAttributeChangeNotification()
 				.withAttributeName(ac.getAttributeName())
 				.withAttributeType(ac.getAttributeType())
-				.withNewValue(String.valueOf(ac.getNewValue()))
-				.withOldValue(String.valueOf(ac.getOldValue()));
+				.withNewValue(ac.getNewValue() == null ? null : String.valueOf(ac.getNewValue()))
+				.withOldValue(ac.getOldValue() == null ? null : String.valueOf(ac.getOldValue()));
 		} else if (aNotification instanceof JMXConnectionNotification) {
 			jaxb = of.createJMXConnectionNotification()
 				.withConnectionId(((JMXConnectionNotification) aNotification).getConnectionId());
@@ -79,6 +81,7 @@ public class NotificationXmlFormatter {
 			jaxb = of.createTimerNotification().withNotificationId(((TimerNotification) aNotification).getNotificationID());
 		} else {
 			jaxb = of.createNotificationEventType();
+			wrap = true;
 		}
 		
 		// add all of the common properties
@@ -95,12 +98,14 @@ public class NotificationXmlFormatter {
 		GregorianCalendar gc = new GregorianCalendar();
 		gc.setTime(date);
 		jaxb.withDateTime(df.newXMLGregorianCalendar(gc));
+
+		Object bean = wrap ? of.createNotificationEvent(jaxb) : jaxb;
 		
-		JAXBContext context = JAXBContext.newInstance(jaxb.getClass());
+		JAXBContext context = JAXBContext.newInstance(of.getClass().getPackage().getName());
 		Marshaller marshaller = context.createMarshaller();
 		
 		StringWriter sw = new StringWriter();
-		marshaller.marshal(jaxb, sw);
+		marshaller.marshal(bean, sw);
 		
 		return sw.toString();
 	}
