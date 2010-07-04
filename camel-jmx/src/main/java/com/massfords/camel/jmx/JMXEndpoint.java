@@ -37,7 +37,6 @@ public class JMXEndpoint extends DefaultEndpoint {
 	private Hashtable<String,String> mObjectProperties;
 	private String mServerURL;
 	private NotificationFilter mNotificationFilter;
-	private String mFilterClass;
 	private Object mHandback;
 	private ObjectName mJMXObjectName;
 
@@ -122,14 +121,6 @@ public class JMXEndpoint extends DefaultEndpoint {
 
 	public void setNotificationFilter(NotificationFilter aFilterRef) {
 		mNotificationFilter = aFilterRef;
-	}
-
-	public String getFilterClass() {
-		return mFilterClass;
-	}
-
-	public void setFilterClass(String aFilterClass) {
-		mFilterClass = aFilterClass;
 	}
 
 	public Object getHandback() {

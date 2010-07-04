@@ -12,7 +12,7 @@ public class JMXUri {
     }
     
     public JMXUri(String aServerName) {
-        mServerName = aServerName;
+        setServerName(aServerName);
     }
     
     public JMXUri withFormat(String aFormat) {
@@ -26,7 +26,7 @@ public class JMXUri {
     }
 
     public JMXUri withPassword(String aFormat) {
-        addProperty("user", aFormat);
+        addProperty("password", aFormat);
         return this;
     }
 
@@ -61,11 +61,6 @@ public class JMXUri {
         mQueryProps.put(aName, aValue);
     }
     
-    public JMXUri withProperty(String aName, String aValue) {
-        addProperty(aName, aValue);
-        return this;
-    }
-    
     public String getServerName() {
         return mServerName;
     }
@@ -73,9 +68,14 @@ public class JMXUri {
     public void setServerName(String aServerName) {
         mServerName = aServerName;
     }
+    
+    public JMXUri withServerName(String aServerName) {
+        setServerName(aServerName);
+        return this;
+    }
 
     public String toString() {
-        StringBuilder sb = new StringBuilder("jmx:").append(mServerName);
+        StringBuilder sb = new StringBuilder("jmx:").append(getServerName());
         if (!mQueryProps.isEmpty()) {
             sb.append('?');
             

@@ -42,4 +42,16 @@ public class JMXConsumerTest extends SimpleBeanFixture {
 				XmlFixture.toDoc(new File("src/test/resources/consumer-test/touched.xml")), 
 				XmlFixture.toDoc(getBody(0, String.class)));
 	}
+	
+	@Test
+	public void testUserData() throws Exception {
+        ISimpleMXBean simpleBean = getSimpleMXBean();
+        simpleBean.userData("myUserData");
+        
+        waitForMessages(1);
+
+        XmlFixture.assertXMLIgnorePrefix("failed to match", 
+                XmlFixture.toDoc(new File("src/test/resources/consumer-test/userdata.xml")), 
+                XmlFixture.toDoc(getBody(0, String.class)));
+	}
 }

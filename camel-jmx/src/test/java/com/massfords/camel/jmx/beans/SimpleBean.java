@@ -39,7 +39,14 @@ public class SimpleBean extends NotificationBroadcasterSupport implements ISimpl
 		mTimestamp = aTimestamp;
 	}
 
-	@Override
+    @Override
+    public void userData(String aUserData) {
+        Notification n = new Notification("userData", this, mSequence++, mTimestamp, "Here's my user data");
+        n.setUserData(aUserData);
+        sendNotification(n);
+    }
+
+    @Override
 	public void touch() {
 		Notification n = new Notification("touched", this, mSequence++, mTimestamp, "I was touched");
 		sendNotification(n);
