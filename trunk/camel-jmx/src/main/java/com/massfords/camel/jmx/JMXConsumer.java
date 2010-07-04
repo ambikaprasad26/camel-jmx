@@ -46,9 +46,6 @@ public class JMXConsumer extends DefaultConsumer implements NotificationListener
 		}
 		// subscribe
 		NotificationFilter nf = ep.getNotificationFilter();
-		if (nf == null && ep.getFilterClass() != null) {
-			nf = (NotificationFilter) Class.forName(ep.getFilterClass()).newInstance();
-		}
 		
 		ObjectName objectName = ep.getJMXObjectName();
 		

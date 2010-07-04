@@ -5,6 +5,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import javax.management.ObjectName;
 
@@ -68,5 +69,15 @@ public class JMXEndpointTest {
 		ep = (JMXEndpoint) context.getEndpoint("jmx://service:jmx:rmi:///jndi/rmi://localhost:1099/jmxrmi?objectDomain=FooDomain&key.name=theObjectName");
 		assertFalse(ep.isPlatformServer());
 		assertEquals("service:jmx:rmi:///jndi/rmi://localhost:1099/jmxrmi", ep.getServerURL());
+	}
+	
+	@Test
+	public void test_noProducer() throws Exception {
+        JMXEndpoint ep = (JMXEndpoint) context.getEndpoint("jmx:platform?objectDomain=FooDomain&key.name=theObjectName");
+        try {
+            ep.createProducer();
+            fail("producer pattern is not supported");
+        } catch(UnsupportedOperationException e) {
+        }
 	}
 }
