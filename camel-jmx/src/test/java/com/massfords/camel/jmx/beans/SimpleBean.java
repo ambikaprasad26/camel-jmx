@@ -3,6 +3,7 @@ package com.massfords.camel.jmx.beans;
 import javax.management.AttributeChangeNotification;
 import javax.management.Notification;
 import javax.management.NotificationBroadcasterSupport;
+import javax.management.remote.JMXConnectionNotification;
 
 public class SimpleBean extends NotificationBroadcasterSupport implements ISimpleMXBean {
 	private int mSequence;
@@ -51,4 +52,12 @@ public class SimpleBean extends NotificationBroadcasterSupport implements ISimpl
 		Notification n = new Notification("touched", this, mSequence++, mTimestamp, "I was touched");
 		sendNotification(n);
 	}
+    
+    @Override
+    public void triggerConnectionNotification() {
+        JMXConnectionNotification n = new JMXConnectionNotification("connection", this, 
+                                        "conn-123", mSequence++, "connection notification", null);
+        n.setTimeStamp(mTimestamp);
+        sendNotification(n);
+    }
 }

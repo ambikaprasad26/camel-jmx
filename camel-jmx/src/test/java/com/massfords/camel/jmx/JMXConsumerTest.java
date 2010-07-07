@@ -14,33 +14,30 @@ public class JMXConsumerTest extends SimpleBeanFixture {
 	public void testAttributeChange() throws Exception {
 		
 		ISimpleMXBean simpleBean = getSimpleMXBean();
+
 		simpleBean.setStringValue("foo");
-		
 		waitForMessages(1);
-		
-		XmlFixture.assertXMLIgnorePrefix("failed to match", 
-				XmlFixture.toDoc(new File("src/test/resources/consumer-test/attributeChange-0.xml")), 
-				XmlFixture.toDoc(getBody(0, String.class)));
-		
-		// change the value again, should match with newValue=bar and oldValue=foo
+		assertMessageReceived("src/test/resources/consumer-test/attributeChange-0.xml");
+
 		simpleBean.setStringValue("bar");
-		waitForMessages(2);
+		waitForMessages(1);
+        assertMessageReceived("src/test/resources/consumer-test/attributeChange-1.xml");
 		
-		XmlFixture.assertXMLIgnorePrefix("failed to match", 
-				XmlFixture.toDoc(new File("src/test/resources/consumer-test/attributeChange-1.xml")), 
-				XmlFixture.toDoc(getBody(1, String.class)));
+		// set the string to null
+		simpleBean.setStringValue(null);
+        waitForMessages(1);
+        assertMessageReceived("src/test/resources/consumer-test/attributeChange-2.xml");
 	}
-	
-	@Test
+
+    @Test
 	public void testNotification() throws Exception {
 		ISimpleMXBean simpleBean = getSimpleMXBean();
 		simpleBean.touch();
 		
 		waitForMessages(1);
 
-		XmlFixture.assertXMLIgnorePrefix("failed to match", 
-				XmlFixture.toDoc(new File("src/test/resources/consumer-test/touched.xml")), 
-				XmlFixture.toDoc(getBody(0, String.class)));
+		String expected = "src/test/resources/consumer-test/touched.xml";
+		assertMessageReceived(expected);
 	}
 	
 	@Test
@@ -50,8 +47,30 @@ public class JMXConsumerTest extends SimpleBeanFixture {
         
         waitForMessages(1);
 
-        XmlFixture.assertXMLIgnorePrefix("failed to match", 
-                XmlFixture.toDoc(new File("src/test/resources/consumer-test/userdata.xml")), 
-                XmlFixture.toDoc(getBody(0, String.class)));
+        String expected = "src/test/resources/consumer-test/userdata.xml";
+        assertMessageReceived(expected);
 	}
+	
+	@Test
+	public void testJMXConnection() throws Exception {
+        ISimpleMXBean simpleBean = getSimpleMXBean();
+        simpleBean.triggerConnectionNotification();
+        
+        waitForMessages(1);
+
+        String expected = "src/test/resources/consumer-test/jmxConnectionNotification.xml";
+        assertMessageReceived(expected);
+	}
+
+	private void assertMessageReceived(String expectedPath) throws Exception {
+        XmlFixture.assertXMLIgnorePrefix("failed to match", 
+                XmlFixture.toDoc(new File(expectedPath)), 
+                XmlFixture.toDoc(getBody(0, String.class)));
+        resetMockEndpoint();
+    }
+
+    private void resetMockEndpoint() {
+        getMockEndpoint().reset();
+    }
+    
 }
