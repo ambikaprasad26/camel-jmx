@@ -1,6 +1,13 @@
 package com.massfords.camel.jmx;
 
+import static org.junit.Assert.fail;
+
 import java.io.File;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 
 import org.custommonkey.xmlunit.Diff;
 import org.custommonkey.xmlunit.Difference;
@@ -41,7 +48,13 @@ public class XmlFixture {
 		        return DifferenceListener.RETURN_ACCEPT_DIFFERENCE;
 			}
 		});
-        XMLAssert.assertXMLEqual(diff, true);
+        try {
+            XMLAssert.assertXMLEqual(diff, true);
+        } catch (Throwable t) {
+            XMLUnit.getTransformerFactory().newTransformer().transform(new DOMSource(aActual), new StreamResult(System.out));
+            StringWriter sw = new StringWriter();
+            t.printStackTrace(new PrintWriter(sw));
+            fail(sw.toString());
+        }
     }
-
 }
