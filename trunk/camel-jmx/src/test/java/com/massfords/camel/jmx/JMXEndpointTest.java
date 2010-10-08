@@ -80,4 +80,11 @@ public class JMXEndpointTest {
         } catch(UnsupportedOperationException e) {
         }
 	}
+	
+	@Test
+	public void test_credentials() throws Exception {
+        JMXEndpoint ep = (JMXEndpoint) context.getEndpoint("jmx:platform?objectDomain=FooDomain&key.name=theObjectName&user=user1&password=1234");
+        assertEquals("user1", ep.getUser());
+        assertEquals("1234", ep.getPassword());
+	}
 }
