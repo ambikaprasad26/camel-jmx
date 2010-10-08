@@ -47,7 +47,8 @@ public class JMXNotificationFilterTest extends SimpleBeanFixture {
         return super.buildFromURI().withNotificationFilter("#myFilter").withFormat("raw");
     }
 
-    @Override
+    @SuppressWarnings("serial")
+	@Override
     protected void initRegistry() {
         getRegistry().put("myFilter", new NotificationFilter() {
 
