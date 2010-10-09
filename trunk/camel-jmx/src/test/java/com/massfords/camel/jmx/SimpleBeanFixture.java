@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
 
+import java.io.File;
 import java.lang.management.ManagementFactory;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -16,6 +17,7 @@ import javax.management.MBeanServer;
 import javax.management.ObjectName;
 
 import org.apache.camel.Exchange;
+import org.apache.camel.Message;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.mock.MockEndpoint;
 import org.apache.camel.impl.DefaultCamelContext;
@@ -99,11 +101,23 @@ public class SimpleBeanFixture {
     	return objectName;
     }
 
-    protected String getBody(int index, Class<String> type) {
-    	List<Exchange> exchanges = mMockEndpoint.getReceivedExchanges();
-    	String body = exchanges.get(index).getIn().getBody(type);
+    protected <T> T getBody(int index, Class<T> type) {
+    	Message in = getMessage(index);
+        T body = in.getBody(type);
     	assertNotNull(body);
     	return body;
+    }
+
+    protected Message getMessage(int index) {
+        Exchange exchange = getExchange(index);
+        Message in = exchange.getIn();
+        return in;
+    }
+
+    protected Exchange getExchange(int index) {
+        List<Exchange> exchanges = mMockEndpoint.getReceivedExchanges();
+    	Exchange exchange = exchanges.get(index);
+        return exchange;
     }
 
     protected void initBean() throws ParseException, Exception {
@@ -135,7 +149,7 @@ public class SimpleBeanFixture {
         return uri;
     }
 
-    protected void initRegistry() {
+    protected void initRegistry() throws Exception {
     }
 
     protected DefaultCamelContext getContext() {
@@ -186,4 +200,14 @@ public class SimpleBeanFixture {
         mTimeUnit = aTimeUnit;
     }
 
+    protected void assertMessageReceived(String expectedPath) throws Exception {
+        XmlFixture.assertXMLIgnorePrefix("failed to match", 
+                XmlFixture.toDoc(new File(expectedPath)), 
+                XmlFixture.toDoc(getBody(0, String.class)));
+        resetMockEndpoint();
+    }
+
+    protected void resetMockEndpoint() {
+        getMockEndpoint().reset();
+    }
 }
