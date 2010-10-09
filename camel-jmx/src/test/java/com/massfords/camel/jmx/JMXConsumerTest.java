@@ -1,9 +1,6 @@
 package com.massfords.camel.jmx;
 
 
-import java.io.File;
-
-
 import org.junit.Test;
 
 import com.massfords.camel.jmx.beans.ISimpleMXBean;
@@ -61,16 +58,4 @@ public class JMXConsumerTest extends SimpleBeanFixture {
         String expected = "src/test/resources/consumer-test/jmxConnectionNotification.xml";
         assertMessageReceived(expected);
 	}
-
-	private void assertMessageReceived(String expectedPath) throws Exception {
-        XmlFixture.assertXMLIgnorePrefix("failed to match", 
-                XmlFixture.toDoc(new File(expectedPath)), 
-                XmlFixture.toDoc(getBody(0, String.class)));
-        resetMockEndpoint();
-    }
-
-    private void resetMockEndpoint() {
-        getMockEndpoint().reset();
-    }
-    
 }
