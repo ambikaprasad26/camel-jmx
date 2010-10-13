@@ -3,6 +3,8 @@ package com.massfords.camel.jmx;
 import java.lang.management.ManagementFactory;
 import java.util.Collections;
 import java.util.Map;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 import javax.management.MBeanServerConnection;
 import javax.management.Notification;
@@ -18,15 +20,19 @@ import org.apache.camel.ExchangePattern;
 import org.apache.camel.Message;
 import org.apache.camel.Processor;
 import org.apache.camel.impl.DefaultConsumer;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 public class JMXConsumer extends DefaultConsumer implements NotificationListener {
+    private static final Log LOG = LogFactory.getLog(JMXConsumer.class);
 
-	private MBeanServerConnection mServerConnection;
-	private NotificationXmlFormatter mFormatter = new NotificationXmlFormatter();
+    private MBeanServerConnection mServerConnection;
+    private NotificationXmlFormatter mFormatter;
 
-	public JMXConsumer(JMXEndpoint aEndpoint, Processor aProcessor) {
-		super(aEndpoint, aProcessor);
-	}
+    public JMXConsumer(JMXEndpoint aEndpoint, Processor aProcessor) throws Exception {
+        super(aEndpoint, aProcessor);
+        mFormatter = new NotificationXmlFormatter();
+    }
 
 	@Override
 	protected void doStart() throws Exception {
@@ -69,20 +75,29 @@ public class JMXConsumer extends DefaultConsumer implements NotificationListener
 
 	@Override
 	public void handleNotification(Notification aNotification, Object aHandback) {
-		JMXEndpoint ep = (JMXEndpoint) getEndpoint();
-		Exchange exchange = getEndpoint().createExchange(ExchangePattern.InOnly);
-		Message message = exchange.getIn();
-		message.setHeader("jmx.handback", aHandback);
-		try {
-			if (ep.isXML()) {
-				message.setBody(mFormatter.format(aNotification));
-			} else {
-				message.setBody(aNotification);
-			}
-			getProcessor().process(exchange);
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
+        JMXEndpoint ep = (JMXEndpoint) getEndpoint();
+        Exchange exchange = getEndpoint().createExchange(ExchangePattern.InOnly);
+        Message message = exchange.getIn();
+        message.setHeader("jmx.handback", aHandback);
+        if (ep.isXML()) {
+            Lock lock = new ReentrantLock(false);
+            lock.lock();
+            try {
+                message.setBody(mFormatter.format(aNotification));
+            } catch (Exception e) {
+                LOG.error("Failed to marshal notification");
+                LOG.error(e);
+            } finally {
+                lock.unlock();
+            }
+        } else {
+            message.setBody(aNotification);
+        }
+        try {
+            getProcessor().process(exchange);
+        } catch (Exception e) {
+            LOG.error("Failed to marshal notification");
+            LOG.error(e);
+        }
+    }
 }
