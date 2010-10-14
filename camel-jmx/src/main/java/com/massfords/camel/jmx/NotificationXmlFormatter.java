@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 import javax.management.AttributeChangeNotification;
 import javax.management.MBeanServerNotification;
@@ -15,7 +17,9 @@ import javax.management.relation.RelationNotification;
 import javax.management.remote.JMXConnectionNotification;
 import javax.management.timer.TimerNotification;
 import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
+import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 
 import com.massfords.code.camel_jmx.NotificationEventType;
@@ -26,17 +30,21 @@ import com.massfords.code.camel_jmx.RelationNotification.OldRoleValue;
 
 public class NotificationXmlFormatter {
 
-	public String format(Notification aNotification) throws Exception {
-		
-		ObjectFactory of = new ObjectFactory();
-		
-		NotificationEventType jaxb = null;
-		
-		boolean wrap = false;
-	
-		if (aNotification instanceof AttributeChangeNotification) {
-			AttributeChangeNotification ac = (AttributeChangeNotification) aNotification;
-			
+    private DatatypeFactory mDatatypeFactory;
+    private Marshaller mMarshaller;
+    private Lock mMarshallerLock = new ReentrantLock(false);
+
+    public String format(Notification aNotification) throws NotificationFormatException {
+
+        ObjectFactory of = new ObjectFactory();
+
+        NotificationEventType jaxb = null;
+
+        boolean wrap = false;
+
+        if (aNotification instanceof AttributeChangeNotification) {
+            AttributeChangeNotification ac = (AttributeChangeNotification) aNotification;
+
 			jaxb = of.createAttributeChangeNotification()
 				.withAttributeName(ac.getAttributeName())
 				.withAttributeType(ac.getAttributeType())
@@ -90,31 +98,53 @@ public class NotificationXmlFormatter {
 			.withSource(String.valueOf(aNotification.getSource()))
 			.withTimestamp(aNotification.getTimeStamp())
 			.withType(aNotification.getType());
-		if (aNotification.getUserData() != null)
-			jaxb.withUserData(String.valueOf(aNotification.getUserData()));
-		
-		DatatypeFactory df = DatatypeFactory.newInstance();
-		Date date = new Date(aNotification.getTimeStamp());
-		GregorianCalendar gc = new GregorianCalendar();
-		gc.setTime(date);
-		jaxb.withDateTime(df.newXMLGregorianCalendar(gc));
+        if (aNotification.getUserData() != null)
+            jaxb.withUserData(String.valueOf(aNotification.getUserData()));
 
-		Object bean = wrap ? of.createNotificationEvent(jaxb) : jaxb;
-		
-		JAXBContext context = JAXBContext.newInstance(of.getClass().getPackage().getName());
-		Marshaller marshaller = context.createMarshaller();
-		
-		StringWriter sw = new StringWriter();
-		marshaller.marshal(bean, sw);
-		
-		return sw.toString();
-	}
+        try {
+            DatatypeFactory df = getDatatypeFactory();
+            Date date = new Date(aNotification.getTimeStamp());
+            GregorianCalendar gc = new GregorianCalendar();
+            gc.setTime(date);
+            jaxb.withDateTime(df.newXMLGregorianCalendar(gc));
 
-	private List<String> toStringList(List<ObjectName> objectNames) {
-		List<String> roles = new ArrayList(objectNames.size());
-		for(ObjectName on : objectNames) {
-			roles.add(on.toString());
-		}
-		return roles;
-	}
+            Object bean = wrap ? of.createNotificationEvent(jaxb) : jaxb;
+
+            StringWriter sw = new StringWriter();
+
+            try {
+                mMarshallerLock.lock();
+                getMarshaller(of.getClass().getPackage().getName()).marshal(bean, sw);
+            } finally {
+                mMarshallerLock.unlock();
+            }
+            return sw.toString();
+        } catch (JAXBException e) {
+            throw new NotificationFormatException(e);
+        } catch (DatatypeConfigurationException e) {
+            throw new NotificationFormatException(e);
+        }
+    }
+
+    private DatatypeFactory getDatatypeFactory() throws DatatypeConfigurationException {
+        if (mDatatypeFactory == null) {
+            mDatatypeFactory = DatatypeFactory.newInstance();
+        }
+        return mDatatypeFactory;
+    }
+
+    private Marshaller getMarshaller(String aPackageName) throws JAXBException {
+        if (mMarshaller == null) {
+            mMarshaller = JAXBContext.newInstance(aPackageName).createMarshaller();
+        }
+        return mMarshaller;
+    }
+
+    private List<String> toStringList(List<ObjectName> objectNames) {
+        List<String> roles = new ArrayList(objectNames.size());
+        for (ObjectName on : objectNames) {
+            roles.add(on.toString());
+        }
+        return roles;
+    }
 }
