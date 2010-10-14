@@ -3,8 +3,6 @@ package com.massfords.camel.jmx;
 import java.lang.management.ManagementFactory;
 import java.util.Collections;
 import java.util.Map;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 
 import javax.management.MBeanServerConnection;
 import javax.management.Notification;
@@ -79,25 +77,17 @@ public class JMXConsumer extends DefaultConsumer implements NotificationListener
         Exchange exchange = getEndpoint().createExchange(ExchangePattern.InOnly);
         Message message = exchange.getIn();
         message.setHeader("jmx.handback", aHandback);
-        if (ep.isXML()) {
-            Lock lock = new ReentrantLock(false);
-            lock.lock();
-            try {
-                message.setBody(mFormatter.format(aNotification));
-            } catch (Exception e) {
-                LOG.error("Failed to marshal notification");
-                LOG.error(e);
-            } finally {
-                lock.unlock();
-            }
-        } else {
-            message.setBody(aNotification);
-        }
         try {
+            if (ep.isXML()) {
+                message.setBody(mFormatter.format(aNotification));
+            } else {
+                message.setBody(aNotification);
+            }
             getProcessor().process(exchange);
+        } catch (NotificationFormatException e) {
+            LOG.error("Failed to marshal notification", e);
         } catch (Exception e) {
-            LOG.error("Failed to marshal notification");
-            LOG.error(e);
+            LOG.error("Failed to process notification", e);
         }
     }
 }
