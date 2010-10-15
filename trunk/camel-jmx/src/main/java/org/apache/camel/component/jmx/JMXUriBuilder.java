@@ -4,60 +4,87 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
-public class JMXUri {
+/**
+ * Builder for JMX endpoint URI's. Saves you from having to do the string concat'ing
+ * and messing up the param names
+ * 
+ * @author markford
+ * 
+ */
+public class JMXUriBuilder {
     private Map<String,String> mQueryProps = new LinkedHashMap();
     private String mServerName = "platform"; 
     
-    public JMXUri() {
+    public JMXUriBuilder() {
     }
     
-    public JMXUri(String aServerName) {
+    public JMXUriBuilder(String aServerName) {
         setServerName(aServerName);
     }
     
-    public JMXUri withFormat(String aFormat) {
+    public JMXUriBuilder withFormat(String aFormat) {
         addProperty("format", aFormat);
         return this;
     }
     
-    public JMXUri withUser(String aFormat) {
+    public JMXUriBuilder withUser(String aFormat) {
         addProperty("user", aFormat);
         return this;
     }
 
-    public JMXUri withPassword(String aFormat) {
+    public JMXUriBuilder withPassword(String aFormat) {
         addProperty("password", aFormat);
         return this;
     }
 
-    public JMXUri withObjectDomain(String aFormat) {
+    public JMXUriBuilder withObjectDomain(String aFormat) {
         addProperty("objectDomain", aFormat);
         return this;
     }
 
-    public JMXUri withObjectName(String aFormat) {
+    public JMXUriBuilder withObjectName(String aFormat) {
         addProperty("objectName", aFormat);
         return this;
     }
 
-    public JMXUri withNotificationFilter(String aFilter) {
+    public JMXUriBuilder withNotificationFilter(String aFilter) {
         addProperty("notificationFilter", aFilter);
         return this;
     }
 
-    public JMXUri withHandback(String aHandback) {
+    public JMXUriBuilder withHandback(String aHandback) {
         addProperty("handback", aHandback);
         return this;
     }
 
-    public JMXUri withObjectProperties(Map<String,String> aPropertiesSansKeyPrefix) {
+    /**
+     * Converts all of the values to params with the "key." prefix so the 
+     * component will pick up on them and set them on the endpoint. Alternatively,
+     * you can pass in a reference to a Hashtable using the version of this
+     * method that takes a single string.
+     * @param aPropertiesSansKeyPrefix
+     */
+    public JMXUriBuilder withObjectProperties(Map<String,String> aPropertiesSansKeyPrefix) {
         for(Entry<String,String> entry : aPropertiesSansKeyPrefix.entrySet()) {
             addProperty("key." + entry.getKey(), entry.getValue());
         }
         return this;
     }
+    
+    /**
+     * Your value should start with a hash mark since it's a reference to a value.
+     * This method will add the hash mark if it's not present.
+     * @param aReferenceToHashtable
+     */
+    public JMXUriBuilder withObjectPropertiesReference(String aReferenceToHashtable) {
+        if(aReferenceToHashtable.startsWith("#"))
+            addProperty("objectProperties", aReferenceToHashtable);
+        else
+            addProperty("objectProperties", "#" + aReferenceToHashtable);
+        return this;
+    }
 
-    public void addProperty(String aName, String aValue) {
+    protected void addProperty(String aName, String aValue) {
         mQueryProps.put(aName, aValue);
     }
     
@@ -69,7 +96,7 @@ public class JMXUri {
         mServerName = aServerName;
     }
     
-    public JMXUri withServerName(String aServerName) {
+    public JMXUriBuilder withServerName(String aServerName) {
         setServerName(aServerName);
         return this;
     }

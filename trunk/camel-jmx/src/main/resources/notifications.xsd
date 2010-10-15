@@ -13,6 +13,12 @@
     </xs:annotation>
 
     <xs:complexType name="notificationEventType">
+        <xs:annotation>
+            <xs:documentation>
+                Base type that includes all of the elements for a 
+                javax.management.Notification
+            </xs:documentation>
+        </xs:annotation>
         <xs:sequence>
             <xs:element name="source" type="xs:string"/>
             <xs:element name="message" type="xs:string"/>
@@ -24,17 +30,42 @@
         </xs:sequence>
     </xs:complexType>
 
-    <xs:element name="notificationEvent" type="tns:notificationEventType"/>
+    <xs:element name="NotificationEvent" type="tns:notificationEventType">
+        <xs:annotation>
+            <xs:documentation>
+                Models a javax.management.Notification
+            </xs:documentation>
+        </xs:annotation>
+    </xs:element>
 
-    <xs:element name="attributeChangeNotification">
+    <xs:element name="AttributeChangeNotification">
+        <xs:annotation>
+            <xs:documentation>
+                Models a javax.management.AttributeChangeNotification
+            </xs:documentation>
+        </xs:annotation>
         <xs:complexType>
             <xs:complexContent>
                 <xs:extension base="tns:notificationEventType">
                     <xs:sequence>
                         <xs:element name="attributeName" type="xs:string"/>
                         <xs:element name="attributeType" type="xs:string"/>
-                        <xs:element name="newValue" type="xs:string" nillable="true"/>
-                        <xs:element name="oldValue" type="xs:string" nillable="true"/>
+                        <xs:element name="newValue" type="xs:string" nillable="true">
+                            <xs:annotation>
+                                <xs:documentation>
+                                    Value will be converted to a string. xsi:nil is used
+                                    to convey a null value
+                                </xs:documentation>
+                            </xs:annotation>
+                        </xs:element>
+                        <xs:element name="oldValue" type="xs:string" nillable="true">
+                            <xs:annotation>
+                                <xs:documentation>
+                                    Value will be converted to a string. xsi:nil is used
+                                    to convey a null value
+                                </xs:documentation>
+                            </xs:annotation>
+                        </xs:element>
                     </xs:sequence>
                 </xs:extension>
             </xs:complexContent>
@@ -42,6 +73,11 @@
     </xs:element>
 
     <xs:element name="JMXConnectionNotification">
+        <xs:annotation>
+            <xs:documentation>
+                Models a javax.management.JMXConnectionNotification
+            </xs:documentation>
+        </xs:annotation>
         <xs:complexType>
             <xs:complexContent>
                 <xs:extension base="tns:notificationEventType">
@@ -54,6 +90,11 @@
     </xs:element>
 
     <xs:element name="MBeanServerNotification">
+        <xs:annotation>
+            <xs:documentation>
+                Models a javax.management.MBeanServerNotification
+            </xs:documentation>
+        </xs:annotation>
         <xs:complexType>
             <xs:complexContent>
                 <xs:extension base="tns:notificationEventType">
@@ -66,6 +107,11 @@
     </xs:element>
 
     <xs:element name="MonitorNotification">
+        <xs:annotation>
+            <xs:documentation>
+                Models a javax.management.MonitorNotification
+            </xs:documentation>
+        </xs:annotation>
         <xs:complexType>
             <xs:complexContent>
                 <xs:extension base="tns:notificationEventType">
@@ -81,6 +127,11 @@
     </xs:element>
 
     <xs:element name="RelationNotification">
+        <xs:annotation>
+            <xs:documentation>
+                Models a javax.management.RelationNotification
+            </xs:documentation>
+        </xs:annotation>
         <xs:complexType>
             <xs:complexContent>
                 <xs:extension base="tns:notificationEventType">
@@ -89,37 +140,33 @@
                         <xs:element name="relationId" type="xs:string"/>
                         <xs:element name="relationTypeName" type="xs:string"/>
                         <xs:element name="roleName" type="xs:string" minOccurs="0"/>
-                        <xs:element name="MBeansToUnregister" minOccurs="0">
-                            <xs:complexType>
-                                <xs:sequence>
-                                    <xs:element name="objectName" type="xs:string"
-                                        maxOccurs="unbounded"/>
-                                </xs:sequence>
-                            </xs:complexType>
-                        </xs:element>
-                        <xs:element name="newRoleValue" minOccurs="0">
-                            <xs:complexType>
-                                <xs:sequence>
-                                    <xs:element name="objectName" type="xs:string"
-                                        maxOccurs="unbounded"/>
-                                </xs:sequence>
-                            </xs:complexType>
-                        </xs:element>
-                        <xs:element name="oldRoleValue" minOccurs="0">
-                            <xs:complexType>
-                                <xs:sequence>
-                                    <xs:element name="objectName" type="xs:string"
-                                        maxOccurs="unbounded"/>
-                                </xs:sequence>
-                            </xs:complexType>
-                        </xs:element>
+                        <xs:element name="MBeansToUnregister" minOccurs="0" type="tns:objectNamesType"/>
+                        <xs:element name="newRoleValue" minOccurs="0" type="tns:objectNamesType"/>
+                        <xs:element name="oldRoleValue" minOccurs="0" type="tns:objectNamesType"/>
                     </xs:sequence>
                 </xs:extension>
             </xs:complexContent>
         </xs:complexType>
     </xs:element>
 
+    <xs:complexType name="objectNamesType">
+        <xs:annotation>
+            <xs:documentation>
+                List of object names used in RelationNotification
+            </xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="objectName" type="xs:string"
+                maxOccurs="unbounded"/>
+        </xs:sequence>
+    </xs:complexType>
+    
     <xs:element name="TimerNotification">
+        <xs:annotation>
+            <xs:documentation>
+                Models a javax.management.TimerNotification
+            </xs:documentation>
+        </xs:annotation>
         <xs:complexType>
             <xs:complexContent>
                 <xs:extension base="tns:notificationEventType">

@@ -3,11 +3,17 @@ package org.apache.camel.component.jmx;
 import static org.junit.Assert.fail;
 
 import java.io.File;
+import java.io.InputStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 
+import javax.xml.transform.Source;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMResult;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
+import javax.xml.transform.stream.StreamSource;
 
 import org.custommonkey.xmlunit.Diff;
 import org.custommonkey.xmlunit.Difference;
@@ -56,5 +62,15 @@ public class XmlFixture {
             t.printStackTrace(new PrintWriter(sw));
             fail(sw.toString());
         }
+    }
+    
+    public static Document stripTimestamp(Document aDocument) throws Exception {
+        TransformerFactory tf = TransformerFactory.newInstance();
+        InputStream in = XmlFixture.class.getResourceAsStream("/stripTimestamp.xsl");
+        Source src = new StreamSource(in);
+        Transformer t = tf.newTransformer(src);
+        DOMResult result = new DOMResult();
+        t.transform(new DOMSource(aDocument), result);
+        return (Document) result.getNode();
     }
 }

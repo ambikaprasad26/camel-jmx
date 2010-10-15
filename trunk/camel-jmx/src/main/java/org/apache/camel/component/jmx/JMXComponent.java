@@ -44,7 +44,6 @@ public class JMXComponent extends DefaultComponent {
 			}
 			
 			endpoint.setObjectProperties(objectProperties);
-			endpoint.setObjectName(null);
 		}
 		
 		if (endpoint.getObjectDomain() == null) {
