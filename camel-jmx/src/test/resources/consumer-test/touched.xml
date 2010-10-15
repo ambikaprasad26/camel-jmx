@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<notificationEvent xmlns="urn:org.apache.camel.component:jmx"
+<NotificationEvent xmlns="urn:org.apache.camel.component:jmx"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
     <source>TestDomain:name=simpleBean</source>
     <message>I was touched</message>
@@ -7,4 +7,4 @@
     <timestamp>1262878215000</timestamp>
     <dateTime>2010-01-07T10:30:15.000-05:00</dateTime>
     <type>touched</type>
-</notificationEvent>
+</NotificationEvent>

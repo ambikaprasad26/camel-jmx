@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<attributeChangeNotification xmlns="urn:org.apache.camel.component:jmx"
+<AttributeChangeNotification xmlns="urn:org.apache.camel.component:jmx"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
     <source>TestDomain:name=simpleBean</source>
     <message>attribute changed</message>
@@ -11,4 +11,4 @@
     <attributeType>string</attributeType>
     <newValue xsi:nil="true"/>
     <oldValue>bar</oldValue>
-</attributeChangeNotification>
+</AttributeChangeNotification>

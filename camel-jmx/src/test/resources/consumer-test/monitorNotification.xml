@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<MonitorNotification xmlns="urn:org.apache.camel.component:jmx">
+    <source>TestDomain:name=counter</source>
+    <message/>
+    <sequence>0</sequence>
+    <type>jmx.monitor.counter.threshold</type>
+    <derivedGauge>2</derivedGauge>
+    <observedAttribute>MonitorNumber</observedAttribute>
+    <observedObject>TestDomain:name=simpleBean</observedObject>
+    <trigger>1</trigger>
+</MonitorNotification>

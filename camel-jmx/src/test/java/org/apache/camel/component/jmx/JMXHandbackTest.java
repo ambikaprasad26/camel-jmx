@@ -5,12 +5,17 @@ import static org.junit.Assert.assertSame;
 import java.net.URI;
 
 import org.apache.camel.Message;
-import org.apache.camel.component.jmx.JMXUri;
+import org.apache.camel.component.jmx.JMXUriBuilder;
 import org.apache.camel.component.jmx.beans.ISimpleMXBean;
 import org.junit.Before;
 import org.junit.Test;
 
 
+/**
+ * Tests that we get the handback object in the message header
+ * 
+ * @author markford
+ */
 public class JMXHandbackTest extends SimpleBeanFixture {
 
     URI hb;
@@ -26,7 +31,7 @@ public class JMXHandbackTest extends SimpleBeanFixture {
         ISimpleMXBean simpleBean = getSimpleMXBean();
         simpleBean.userData("myUserData");
         
-        waitForMessages(1);
+        waitForMessages();
         
         Message m = getMessage(0);
         URI uri = (URI) m.getHeader("jmx.handback");
@@ -34,12 +39,12 @@ public class JMXHandbackTest extends SimpleBeanFixture {
     }
 
     @Override
-    protected JMXUri buildFromURI() {
+    protected JMXUriBuilder buildFromURI() {
         return super.buildFromURI().withHandback("#hb").withFormat("raw");
     }
 
     @Override
-    protected void initRegistry() throws Exception {
+    protected void initRegistry() {
         super.initRegistry();
         getRegistry().put("hb", hb);
     }

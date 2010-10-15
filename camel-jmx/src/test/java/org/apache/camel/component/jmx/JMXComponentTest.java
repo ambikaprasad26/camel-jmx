@@ -13,14 +13,20 @@ import org.apache.camel.component.jmx.JMXEndpoint;
 import org.apache.camel.impl.DefaultCamelContext;
 import org.junit.Test;
 
+/**
+ * Test behavior in the component for initializing an endpoint. Not much here beyond
+ * checking that the code for the required and mutually exclusive params is working. 
+ * 
+ * @author markford
+ */
 public class JMXComponentTest {
 
 	DefaultCamelContext context = new DefaultCamelContext();
 
 	@Test
-	public void testCreateEndpoint_withProperties() throws Exception {
+	public void withObjectProperties() throws Exception {
 
-		JMXEndpoint ep = (JMXEndpoint) context.getEndpoint("jmx:platform?objectDomain=FooDomain&objectName=theObjectName&key.propOne=prop1&key.propTwo=prop2");
+		JMXEndpoint ep = (JMXEndpoint) context.getEndpoint("jmx:platform?objectDomain=FooDomain&key.propOne=prop1&key.propTwo=prop2");
 		assertNotNull(ep);
 		
 		Hashtable<String,String> props = ep.getObjectProperties();
@@ -32,7 +38,7 @@ public class JMXComponentTest {
 	}
 	
 	@Test
-	public void testCreateEndpoint_withoutProperties() throws Exception {
+	public void withObjectName() throws Exception {
 		JMXEndpoint ep = (JMXEndpoint) context.getEndpoint("jmx:platform?objectDomain=FooDomain&objectName=theObjectName");
 		assertNotNull(ep);
 		
@@ -43,7 +49,18 @@ public class JMXComponentTest {
 	}
 	
 	@Test
-	public void testCreateEndpoint_noDomain() throws Exception {
+	public void withObjectName_and_objectProperties() throws Exception {
+	    try {
+	        context.getEndpoint("jmx:platform?objectDomain=FooDomain&objectName=theObjectName&key.propOne=prop1");
+	        fail("expected exception");
+	    } catch(ResolveEndpointFailedException e) {
+	        assertTrue(e.getCause() instanceof IllegalArgumentException);
+	    }
+	    
+	}
+	
+	@Test
+	public void withoutDomain() throws Exception {
 		try {
 			context.getEndpoint("jmx:platform?objectName=theObjectName");
 			fail("missing domain should have caused failure");
@@ -53,7 +70,7 @@ public class JMXComponentTest {
 	}
 	
 	@Test
-	public void testCreateEndpoint_noNameOrProps() throws Exception {
+	public void withoutObjectName_and_objectProperties() throws Exception {
 		try {
 			context.getEndpoint("jmx:platform?objectDomain=theObjectDomain");
 			fail("missing name should have caused failure");

@@ -1,61 +1,86 @@
 package org.apache.camel.component.jmx;
 
 
+import java.io.File;
+
 import org.apache.camel.component.jmx.beans.ISimpleMXBean;
+import org.junit.Before;
 import org.junit.Test;
 
 
+/**
+ * Tests that trigger notification events on our simple bean without
+ * requiring any special setup.
+ * 
+ * @author markford
+ * 
+ */
 public class JMXConsumerTest extends SimpleBeanFixture {
-	
+    
+    ISimpleMXBean simpleBean;
+    
+    @Before
+    public void setUp() throws Exception {
+        super.setUp();
+        simpleBean = getSimpleMXBean();
+    }
+    
 	@Test
-	public void testAttributeChange() throws Exception {
+	public void attributeChange() throws Exception {
 		
-		ISimpleMXBean simpleBean = getSimpleMXBean();
-
+		getMockEndpoint().setExpectedMessageCount(1);
 		simpleBean.setStringValue("foo");
-		waitForMessages(1);
-		assertMessageReceived("src/test/resources/consumer-test/attributeChange-0.xml");
+        waitAndAssertMessageReceived("src/test/resources/consumer-test/attributeChange-0.xml");
 
+        getMockEndpoint().setExpectedMessageCount(1);
 		simpleBean.setStringValue("bar");
-		waitForMessages(1);
-        assertMessageReceived("src/test/resources/consumer-test/attributeChange-1.xml");
+        waitAndAssertMessageReceived("src/test/resources/consumer-test/attributeChange-1.xml");
 		
 		// set the string to null
+        getMockEndpoint().setExpectedMessageCount(1);
 		simpleBean.setStringValue(null);
-        waitForMessages(1);
-        assertMessageReceived("src/test/resources/consumer-test/attributeChange-2.xml");
+        waitAndAssertMessageReceived("src/test/resources/consumer-test/attributeChange-2.xml");
 	}
 
     @Test
-	public void testNotification() throws Exception {
-		ISimpleMXBean simpleBean = getSimpleMXBean();
+	public void notification() throws Exception {
 		simpleBean.touch();
-		
-		waitForMessages(1);
-
-		String expected = "src/test/resources/consumer-test/touched.xml";
-		assertMessageReceived(expected);
+		waitAndAssertMessageReceived("src/test/resources/consumer-test/touched.xml");
 	}
 	
 	@Test
-	public void testUserData() throws Exception {
-        ISimpleMXBean simpleBean = getSimpleMXBean();
+	public void userData() throws Exception {
         simpleBean.userData("myUserData");
-        
-        waitForMessages(1);
-
-        String expected = "src/test/resources/consumer-test/userdata.xml";
-        assertMessageReceived(expected);
+        waitAndAssertMessageReceived("src/test/resources/consumer-test/userdata.xml");
 	}
 	
 	@Test
-	public void testJMXConnection() throws Exception {
-        ISimpleMXBean simpleBean = getSimpleMXBean();
+	public void jmxConnection() throws Exception {
         simpleBean.triggerConnectionNotification();
-        
-        waitForMessages(1);
-
-        String expected = "src/test/resources/consumer-test/jmxConnectionNotification.xml";
-        assertMessageReceived(expected);
+        waitAndAssertMessageReceived("src/test/resources/consumer-test/jmxConnectionNotification.xml");
 	}
+	
+	@Test
+	public void mbeanServerNotification() throws Exception {
+        simpleBean.triggerMBeanServerNotification();
+        waitAndAssertMessageReceived("src/test/resources/consumer-test/mbeanServerNotification.xml");
+	}
+
+	@Test
+    public void relationNotification() throws Exception {
+        simpleBean.triggerRelationNotification();
+        waitAndAssertMessageReceived("src/test/resources/consumer-test/relationNotification.xml");
+    }
+
+	@Test
+    public void timerNotification() throws Exception {
+        simpleBean.triggerTimerNotification();
+        waitAndAssertMessageReceived("src/test/resources/consumer-test/timerNotification.xml");
+    }
+
+	private void waitAndAssertMessageReceived(String aExpectedFilePath) throws InterruptedException, Exception {
+        waitForMessages();
+        assertMessageReceived(new File(aExpectedFilePath));
+    }
+
 }

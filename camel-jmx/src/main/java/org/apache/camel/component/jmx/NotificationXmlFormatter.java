@@ -24,19 +24,22 @@ import javax.xml.datatype.DatatypeFactory;
 
 import org.apache.camel.component.jmx.jaxb.NotificationEventType;
 import org.apache.camel.component.jmx.jaxb.ObjectFactory;
-import org.apache.camel.component.jmx.jaxb.RelationNotification.MBeansToUnregister;
-import org.apache.camel.component.jmx.jaxb.RelationNotification.NewRoleValue;
-import org.apache.camel.component.jmx.jaxb.RelationNotification.OldRoleValue;
+import org.apache.camel.component.jmx.jaxb.ObjectNamesType;
 
+/**
+ * Converts the Notification into an XML stream. 
+ * 
+ * @author markford
+ * 
+ */
 public class NotificationXmlFormatter {
 
     private DatatypeFactory mDatatypeFactory;
     private Marshaller mMarshaller;
     private Lock mMarshallerLock = new ReentrantLock(false);
+    private ObjectFactory mObjectFactory = new ObjectFactory();
 
     public String format(Notification aNotification) throws NotificationFormatException {
-
-        ObjectFactory of = new ObjectFactory();
 
         NotificationEventType jaxb = null;
 
@@ -45,50 +48,47 @@ public class NotificationXmlFormatter {
         if (aNotification instanceof AttributeChangeNotification) {
             AttributeChangeNotification ac = (AttributeChangeNotification) aNotification;
 
-			jaxb = of.createAttributeChangeNotification()
+			jaxb = mObjectFactory.createAttributeChangeNotification()
 				.withAttributeName(ac.getAttributeName())
 				.withAttributeType(ac.getAttributeType())
 				.withNewValue(ac.getNewValue() == null ? null : String.valueOf(ac.getNewValue()))
 				.withOldValue(ac.getOldValue() == null ? null : String.valueOf(ac.getOldValue()));
 		} else if (aNotification instanceof JMXConnectionNotification) {
-			jaxb = of.createJMXConnectionNotification()
+			jaxb = mObjectFactory.createJMXConnectionNotification()
 				.withConnectionId(((JMXConnectionNotification) aNotification).getConnectionId());
 		} else if (aNotification instanceof MBeanServerNotification) {
-			jaxb = of.createMBeanServerNotification()
+			jaxb = mObjectFactory.createMBeanServerNotification()
 				.withMBeanName(String.valueOf(((MBeanServerNotification) aNotification).getMBeanName()));
 		} else if (aNotification instanceof MonitorNotification) {
 			MonitorNotification mn = (MonitorNotification) aNotification;
-			jaxb = of.createMonitorNotification()
+			jaxb = mObjectFactory.createMonitorNotification()
 				.withDerivedGauge(String.valueOf(mn.getDerivedGauge()))
 				.withObservedAttribute(mn.getObservedAttribute())
 				.withObservedObject(String.valueOf(mn.getObservedObject()))
 				.withTrigger(String.valueOf(mn.getTrigger()));
 		} else if (aNotification instanceof RelationNotification) {
 			RelationNotification rn = (RelationNotification) aNotification;
-			jaxb = of.createRelationNotification()
+			jaxb = mObjectFactory.createRelationNotification()
 				.withObjectName(String.valueOf(rn.getObjectName()))
 				.withRelationId(rn.getRelationId())
 				.withRelationTypeName(rn.getRelationTypeName())
 				.withRoleName(rn.getRoleName());
 			if (rn.getNewRoleValue() != null) {
-				List<String> roles = toStringList(rn.getNewRoleValue());
-				NewRoleValue nrv = of.createRelationNotificationNewRoleValue().withObjectName(roles);
-				((org.apache.camel.component.jmx.jaxb.RelationNotification) jaxb).withNewRoleValue(nrv);
+				ObjectNamesType ont = toObjectNamesType(rn.getNewRoleValue());
+				((org.apache.camel.component.jmx.jaxb.RelationNotification) jaxb).withNewRoleValue(ont);
 			}
 			if (rn.getOldRoleValue() != null) {
-				List<String> roles = toStringList(rn.getOldRoleValue());
-				OldRoleValue orv = of.createRelationNotificationOldRoleValue().withObjectName(roles);
-				((org.apache.camel.component.jmx.jaxb.RelationNotification) jaxb).withOldRoleValue(orv);
+                ObjectNamesType ont = toObjectNamesType(rn.getOldRoleValue());
+				((org.apache.camel.component.jmx.jaxb.RelationNotification) jaxb).withOldRoleValue(ont);
 			}
 			if (rn.getMBeansToUnregister() != null) {
-				List<String> roles = toStringList(rn.getMBeansToUnregister());
-				MBeansToUnregister orv = of.createRelationNotificationMBeansToUnregister().withObjectName(roles);
-				((org.apache.camel.component.jmx.jaxb.RelationNotification) jaxb).withMBeansToUnregister(orv);
+                ObjectNamesType ont = toObjectNamesType(rn.getMBeansToUnregister());
+				((org.apache.camel.component.jmx.jaxb.RelationNotification) jaxb).withMBeansToUnregister(ont);
 			}
 		} else if (aNotification instanceof TimerNotification) {
-			jaxb = of.createTimerNotification().withNotificationId(((TimerNotification) aNotification).getNotificationID());
+			jaxb = mObjectFactory.createTimerNotification().withNotificationId(((TimerNotification) aNotification).getNotificationID());
 		} else {
-			jaxb = of.createNotificationEventType();
+			jaxb = mObjectFactory.createNotificationEventType();
 			wrap = true;
 		}
 		
@@ -108,13 +108,13 @@ public class NotificationXmlFormatter {
             gc.setTime(date);
             jaxb.withDateTime(df.newXMLGregorianCalendar(gc));
 
-            Object bean = wrap ? of.createNotificationEvent(jaxb) : jaxb;
+            Object bean = wrap ? mObjectFactory.createNotificationEvent(jaxb) : jaxb;
 
             StringWriter sw = new StringWriter();
 
             try {
                 mMarshallerLock.lock();
-                getMarshaller(of.getClass().getPackage().getName()).marshal(bean, sw);
+                getMarshaller(mObjectFactory.getClass().getPackage().getName()).marshal(bean, sw);
             } finally {
                 mMarshallerLock.unlock();
             }
@@ -124,6 +124,13 @@ public class NotificationXmlFormatter {
         } catch (DatatypeConfigurationException e) {
             throw new NotificationFormatException(e);
         }
+    }
+
+    private ObjectNamesType toObjectNamesType(List<ObjectName> objectNameList) {
+        List<String> roles = toStringList(objectNameList);
+        ObjectNamesType ont = mObjectFactory.createObjectNamesType();
+        ont.withObjectName(roles);
+        return ont;
     }
 
     private DatatypeFactory getDatatypeFactory() throws DatatypeConfigurationException {

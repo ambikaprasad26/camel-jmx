@@ -6,4 +6,8 @@ public interface ISimpleMXBean {
 	public void touch();
 	public void userData(String aUserData);
     public void triggerConnectionNotification();
+    public void triggerMBeanServerNotification() throws Exception;
+    public void triggerRelationNotification() throws Exception;
+    public void triggerTimerNotification();
+    public int getMonitorNumber();
 }

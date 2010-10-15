@@ -2,6 +2,7 @@ package org.apache.camel.component.jmx;
 
 import java.util.Hashtable;
 
+import javax.management.MalformedObjectNameException;
 import javax.management.NotificationFilter;
 import javax.management.ObjectName;
 
@@ -10,35 +11,51 @@ import org.apache.camel.Processor;
 import org.apache.camel.Producer;
 import org.apache.camel.impl.DefaultEndpoint;
 
+/**
+ * Endpoint that describes a connection to an mbean.
+ * 
+ * The component can connect to the local platform mbean server with the following URI:
+ * 
+ * <code>jmx://platform?options</code>
+ * 
+ * A remote mbean server url can be provided following the initial JMX scheme like so:
+ * 
+ * <code>jmx:service:jmx:rmi:///jndi/rmi://localhost:1099/jmxrmi?options</code>
+ * 
+ * You can append query options to the URI in the following format, ?options=value&option2=value&...
+ * 
+ * @author markford
+ */
 public class JMXEndpoint extends DefaultEndpoint {
 
-	/*
-	 
-	common-params 
-		objectDomain=the-domain-value
-		objectName=the-object-value
-		key.<keyname>=the-key-value
-		format=xml ?
-		filterRef=the-filter-ref
-		filterClass=the-filter-class
-
-	jmx:platform
-	
-	jmx:service:jmx:rmi:///jndi/rmi://localhost:1099/jmxrmi
-		user=the-user
-		password=the-password
-	
-	 */
+	/** URI Property: Format for the message body. Either "xml" or "raw". If xml, the notification is serialized to xml. If raw, then the raw java object is set as the body.  */
 	private String mFormat = "xml";
+
+	/** URI Property: credentials for making a remote connection */
 	private String mUser;
+	
+	/** URI Property: credentials for making a remote connection */
 	private String mPassword;
+	
+	/** URI Property: The domain for the mbean you're connecting to  */
 	private String mObjectDomain;
+	
+	/** URI Property: The name key for the mbean you're connecting to. This value is mutually exclusive with the object properties that get passed.  */
 	private String mObjectName;
-	private Hashtable<String,String> mObjectProperties;
-	private String mServerURL;
+	
+	/** URI Property: Reference to a bean that implements the NotificationFilter.  */
 	private NotificationFilter mNotificationFilter;
+	
+	/** URI Property: Value to handback to the listener when a notification is received. This value will be put in the message header with the key "jmx.handback"  */
 	private Object mHandback;
+    
+	/** URI Property: properties for the object name. These values will be used if the objectName param is not set */
+    private Hashtable<String,String> mObjectProperties;
+    
+	/** cached object name that was built from the objectName param or the hashtable */
 	private ObjectName mJMXObjectName;
+    /** server url comes from the remaining endpoint  */
+    private String mServerURL;
 
     public JMXEndpoint(String aEndpointUri, JMXComponent aComponent) {
     	super(aEndpointUri, aComponent);
@@ -56,7 +73,7 @@ public class JMXEndpoint extends DefaultEndpoint {
 	
 	@Override
 	public boolean isSingleton() {
-		return true;
+		return false;
 	}
 
 	public String getFormat() {
@@ -104,6 +121,8 @@ public class JMXEndpoint extends DefaultEndpoint {
 	}
 
 	public void setObjectName(String aObjectName) {
+	    if (getObjectProperties() != null)
+	        throw new IllegalArgumentException("cannot set both objectName and objectProperties");
 		mObjectName = aObjectName;
 	}
 
@@ -135,11 +154,25 @@ public class JMXEndpoint extends DefaultEndpoint {
 		return mObjectProperties;
 	}
 
+	/**
+	 * Setter for the ObjectProperties is either called by reflection when
+	 * processing the URI or manually by the component. 
+	 * 
+	 * If the URI contained a value with a reference like "objectProperties=#myHashtable"
+	 * then the Hashtable will be set in place. 
+	 * 
+	 * If there are extra properties that begin with "key." then the component will 
+	 * create a Hashtable with these values after removing the "key." prefix.
+	 * 
+	 * @param aObjectProperties
+	 */
 	public void setObjectProperties(Hashtable<String, String> aObjectProperties) {
+        if (getObjectName() != null)
+            throw new IllegalArgumentException("cannot set both objectName and objectProperties");
 		mObjectProperties = aObjectProperties;
 	}
 
-	protected ObjectName getJMXObjectName() throws Exception {
+	protected ObjectName getJMXObjectName() throws MalformedObjectNameException {
 		if (mJMXObjectName == null) {
 			ObjectName on = buildObjectName();
 			setJMXObjectName(on);
@@ -151,7 +184,7 @@ public class JMXEndpoint extends DefaultEndpoint {
 		mJMXObjectName = aCachedObjectName;
 	}
 
-	private ObjectName buildObjectName() throws Exception {
+	private ObjectName buildObjectName() throws MalformedObjectNameException {
 		ObjectName objectName = null;
 		if (objectName == null) {
 			
