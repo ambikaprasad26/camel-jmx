@@ -1,4 +1,4 @@
-package com.massfords.camel.jmx;
+package org.apache.camel.component.jmx;
 
 import static org.junit.Assert.assertEquals;
 
@@ -8,9 +8,10 @@ import javax.management.Notification;
 import javax.management.NotificationFilter;
 
 import org.apache.camel.Exchange;
+import org.apache.camel.component.jmx.JMXUri;
+import org.apache.camel.component.jmx.beans.ISimpleMXBean;
 import org.junit.Test;
 
-import com.massfords.camel.jmx.beans.ISimpleMXBean;
 
 public class JMXNotificationFilterTest extends SimpleBeanFixture {
     

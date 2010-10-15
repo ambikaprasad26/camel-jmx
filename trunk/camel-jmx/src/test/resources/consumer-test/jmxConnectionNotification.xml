@@ -1,4 +1,4 @@
-<JMXConnectionNotification xmlns="http://code.massfords.com/camel-jmx">
+<JMXConnectionNotification xmlns="urn:org.apache.camel.component:jmx">
     <source>TestDomain:name=simpleBean</source>
     <message>connection notification</message>
     <sequence>0</sequence>

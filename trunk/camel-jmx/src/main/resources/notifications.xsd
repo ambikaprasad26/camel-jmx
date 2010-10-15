@@ -1,8 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
-    targetNamespace="http://code.massfords.com/camel-jmx"
-    xmlns:tns="http://code.massfords.com/camel-jmx" elementFormDefault="qualified">
-    
+    targetNamespace="urn:org.apache.camel.component:jmx"
+    xmlns:tns="urn:org.apache.camel.component:jmx" elementFormDefault="qualified"
+    xmlns:jxb="http://java.sun.com/xml/ns/jaxb"
+    jxb:version="1.0">
+    <xs:annotation>
+        <xs:appinfo>
+            <jxb:schemaBindings>
+                <jxb:package name="org.apache.camel.component.jmx.jaxb"/>
+            </jxb:schemaBindings>
+        </xs:appinfo>
+    </xs:annotation>
+
     <xs:complexType name="notificationEventType">
         <xs:sequence>
             <xs:element name="source" type="xs:string"/>
@@ -14,9 +23,9 @@
             <xs:element name="userData" type="xs:string" minOccurs="0"/>
         </xs:sequence>
     </xs:complexType>
-    
+
     <xs:element name="notificationEvent" type="tns:notificationEventType"/>
-    
+
     <xs:element name="attributeChangeNotification">
         <xs:complexType>
             <xs:complexContent>
@@ -31,7 +40,7 @@
             </xs:complexContent>
         </xs:complexType>
     </xs:element>
-    
+
     <xs:element name="JMXConnectionNotification">
         <xs:complexType>
             <xs:complexContent>
@@ -43,7 +52,7 @@
             </xs:complexContent>
         </xs:complexType>
     </xs:element>
-    
+
     <xs:element name="MBeanServerNotification">
         <xs:complexType>
             <xs:complexContent>
@@ -55,7 +64,7 @@
             </xs:complexContent>
         </xs:complexType>
     </xs:element>
-    
+
     <xs:element name="MonitorNotification">
         <xs:complexType>
             <xs:complexContent>
@@ -70,7 +79,7 @@
             </xs:complexContent>
         </xs:complexType>
     </xs:element>
-    
+
     <xs:element name="RelationNotification">
         <xs:complexType>
             <xs:complexContent>
@@ -83,21 +92,24 @@
                         <xs:element name="MBeansToUnregister" minOccurs="0">
                             <xs:complexType>
                                 <xs:sequence>
-                                    <xs:element name="objectName" type="xs:string" maxOccurs="unbounded"/>
+                                    <xs:element name="objectName" type="xs:string"
+                                        maxOccurs="unbounded"/>
                                 </xs:sequence>
                             </xs:complexType>
                         </xs:element>
                         <xs:element name="newRoleValue" minOccurs="0">
                             <xs:complexType>
                                 <xs:sequence>
-                                    <xs:element name="objectName" type="xs:string" maxOccurs="unbounded"/>
+                                    <xs:element name="objectName" type="xs:string"
+                                        maxOccurs="unbounded"/>
                                 </xs:sequence>
                             </xs:complexType>
                         </xs:element>
                         <xs:element name="oldRoleValue" minOccurs="0">
                             <xs:complexType>
                                 <xs:sequence>
-                                    <xs:element name="objectName" type="xs:string" maxOccurs="unbounded"/>
+                                    <xs:element name="objectName" type="xs:string"
+                                        maxOccurs="unbounded"/>
                                 </xs:sequence>
                             </xs:complexType>
                         </xs:element>
@@ -106,7 +118,7 @@
             </xs:complexContent>
         </xs:complexType>
     </xs:element>
-    
+
     <xs:element name="TimerNotification">
         <xs:complexType>
             <xs:complexContent>
@@ -118,7 +130,5 @@
             </xs:complexContent>
         </xs:complexType>
     </xs:element>
-    
+
 </xs:schema>
-
-

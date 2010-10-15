@@ -1,4 +1,4 @@
-package com.massfords.camel.jmx.beans;
+package org.apache.camel.component.jmx.beans;
 
 public interface ISimpleMXBean {
 	public String getStringValue();

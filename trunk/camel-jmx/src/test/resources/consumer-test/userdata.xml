@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<notificationEvent xmlns="http://code.massfords.com/camel-jmx"
+<notificationEvent xmlns="urn:org.apache.camel.component:jmx"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
     <source>TestDomain:name=simpleBean</source>
     <message>Here's my user data</message>
