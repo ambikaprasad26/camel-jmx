@@ -1,10 +1,9 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
    <modelVersion>4.0.0</modelVersion>
    <groupId>com.massfords.camel</groupId>
    <artifactId>camel-jmx</artifactId>
    <name>JMX Component for Apache Camel</name>
-   <version>1.0-SNAPSHOT</version>
+   <version>1.0</version>
 
    <description>
       Enables the routing of JMX Notification events into a camel route. A consumer will add itself as 
@@ -13,9 +12,9 @@
       the schema provided.
    </description>
    <scm>
-      <connection>scm:svn:http://camel-jmx.googlecode.com/svn/trunk/camel-jmx</connection>
-      <developerConnection>scm:svn:https://camel-jmx.googlecode.com/svn/trunk/camel-jmx</developerConnection>
-      <url>http://camel-jmx.googlecode.com/svn/trunk/camel-jmx</url>
+      <connection>scm:svn:http://camel-jmx.googlecode.com/svn/tags/camel-jmx-1.0</connection>
+      <developerConnection>scm:svn:https://camel-jmx.googlecode.com/svn/tags/camel-jmx-1.0</developerConnection>
+      <url>http://camel-jmx.googlecode.com/svn/tags/camel-jmx-1.0</url>
    </scm>
 
    <repositories>
