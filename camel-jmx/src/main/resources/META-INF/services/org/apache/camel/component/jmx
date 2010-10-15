@@ -1,1 +1,1 @@
-class=com.massfords.camel.jmx.JMXComponent
+class=org.apache.camel.component.jmx.JMXComponent

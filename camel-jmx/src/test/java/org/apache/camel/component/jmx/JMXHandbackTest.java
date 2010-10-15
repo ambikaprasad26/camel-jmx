@@ -1,14 +1,15 @@
-package com.massfords.camel.jmx;
+package org.apache.camel.component.jmx;
 
 import static org.junit.Assert.assertSame;
 
 import java.net.URI;
 
 import org.apache.camel.Message;
+import org.apache.camel.component.jmx.JMXUri;
+import org.apache.camel.component.jmx.beans.ISimpleMXBean;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.massfords.camel.jmx.beans.ISimpleMXBean;
 
 public class JMXHandbackTest extends SimpleBeanFixture {
 

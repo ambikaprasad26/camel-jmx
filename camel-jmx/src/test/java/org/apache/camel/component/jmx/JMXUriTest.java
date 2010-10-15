@@ -1,9 +1,10 @@
-package com.massfords.camel.jmx;
+package org.apache.camel.component.jmx;
 
 import static org.junit.Assert.assertEquals;
 
 import java.util.LinkedHashMap;
 
+import org.apache.camel.component.jmx.JMXUri;
 import org.junit.Test;
 
 public class JMXUriTest {

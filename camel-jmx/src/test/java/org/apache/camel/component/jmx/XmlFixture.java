@@ -1,4 +1,4 @@
-package com.massfords.camel.jmx;
+package org.apache.camel.component.jmx;
 
 import static org.junit.Assert.fail;
 

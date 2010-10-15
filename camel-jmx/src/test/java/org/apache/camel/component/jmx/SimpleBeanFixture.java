@@ -1,4 +1,4 @@
-package com.massfords.camel.jmx;
+package org.apache.camel.component.jmx;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -19,14 +19,15 @@ import javax.management.ObjectName;
 import org.apache.camel.Exchange;
 import org.apache.camel.Message;
 import org.apache.camel.builder.RouteBuilder;
+import org.apache.camel.component.jmx.JMXUri;
+import org.apache.camel.component.jmx.beans.ISimpleMXBean;
+import org.apache.camel.component.jmx.beans.SimpleBean;
 import org.apache.camel.component.mock.MockEndpoint;
 import org.apache.camel.impl.DefaultCamelContext;
 import org.apache.camel.impl.SimpleRegistry;
 import org.junit.After;
 import org.junit.Before;
 
-import com.massfords.camel.jmx.beans.ISimpleMXBean;
-import com.massfords.camel.jmx.beans.SimpleBean;
 
 public class SimpleBeanFixture {
 

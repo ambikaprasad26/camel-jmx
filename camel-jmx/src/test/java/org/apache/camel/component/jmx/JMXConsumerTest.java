@@ -1,9 +1,9 @@
-package com.massfords.camel.jmx;
+package org.apache.camel.component.jmx;
 
 
+import org.apache.camel.component.jmx.beans.ISimpleMXBean;
 import org.junit.Test;
 
-import com.massfords.camel.jmx.beans.ISimpleMXBean;
 
 public class JMXConsumerTest extends SimpleBeanFixture {
 	

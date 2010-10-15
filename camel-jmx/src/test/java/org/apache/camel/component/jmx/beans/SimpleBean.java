@@ -1,4 +1,4 @@
-package com.massfords.camel.jmx.beans;
+package org.apache.camel.component.jmx.beans;
 
 import javax.management.AttributeChangeNotification;
 import javax.management.Notification;

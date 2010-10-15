@@ -1,4 +1,4 @@
-package com.massfords.camel.jmx;
+package org.apache.camel.component.jmx;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -9,6 +9,7 @@ import static org.junit.Assert.fail;
 import java.util.Hashtable;
 
 import org.apache.camel.ResolveEndpointFailedException;
+import org.apache.camel.component.jmx.JMXEndpoint;
 import org.apache.camel.impl.DefaultCamelContext;
 import org.junit.Test;
 
