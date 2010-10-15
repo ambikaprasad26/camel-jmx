@@ -3,7 +3,7 @@
    <groupId>com.massfords.camel</groupId>
    <artifactId>camel-jmx</artifactId>
    <name>JMX Component for Apache Camel</name>
-   <version>1.0</version>
+   <version>1.1-SNAPSHOT</version>
 
    <description>
       Enables the routing of JMX Notification events into a camel route. A consumer will add itself as 
@@ -12,9 +12,9 @@
       the schema provided.
    </description>
    <scm>
-      <connection>scm:svn:http://camel-jmx.googlecode.com/svn/tags/camel-jmx-1.0</connection>
-      <developerConnection>scm:svn:https://camel-jmx.googlecode.com/svn/tags/camel-jmx-1.0</developerConnection>
-      <url>http://camel-jmx.googlecode.com/svn/tags/camel-jmx-1.0</url>
+      <connection>scm:svn:http://camel-jmx.googlecode.com/svn/trunk/camel-jmx</connection>
+      <developerConnection>scm:svn:https://camel-jmx.googlecode.com/svn/trunk/camel-jmx</developerConnection>
+      <url>http://camel-jmx.googlecode.com/svn/trunk/camel-jmx</url>
    </scm>
 
    <repositories>
