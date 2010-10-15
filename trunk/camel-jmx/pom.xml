@@ -67,10 +67,10 @@
             <configuration>
                <instrumentation>
                   <ignores>
-                     <ignore>com.massfords.code.camel_jmx.*</ignore>
+                     <ignore>org.apache.camel.component.jmx.jaxb.*</ignore>
                   </ignores>
                   <excludes>
-                     <exclude>com/massfords/code/camel_jmx/**.class</exclude>
+                     <exclude>org/apache/camel/component/jmx/jaxb/**.class</exclude>
                   </excludes>
                </instrumentation>
                <check>
@@ -86,12 +86,12 @@
                -->
                   <regexes>
                      <regex>
-                        <pattern>com.massfords.camel.jmx.JMXUri</pattern>
+                        <pattern>org.apache.camel.component.jmx.JMXUri</pattern>
                         <branchRate>100</branchRate>
                         <lineRate>100</lineRate>
                      </regex>
                      <regex>
-                        <pattern>com.massfords.camel.jmx.JMXComponent</pattern>
+                        <pattern>org.apache.camel.component.jmx.JMXComponent</pattern>
                         <branchRate>100</branchRate>
                         <lineRate>100</lineRate>
                      </regex>
