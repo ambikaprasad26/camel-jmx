@@ -3,8 +3,10 @@
    <modelVersion>4.0.0</modelVersion>
    <groupId>com.massfords.camel</groupId>
    <artifactId>camel-jmx</artifactId>
+   <name>JMX Component for Apache Camel</name>
    <version>1.0-SNAPSHOT</version>
 
+   <description>Enables the routing of JMX Notification events into a camel route. A consumer will add itself as a NotificationListener on the specified objectName and process each Notification event it receives as the body of a message. Optionally, the Notification can be converted to XML using the schema provided.</description>
    <scm>
       <connection>scm:svn:http://camel-jmx.googlecode.com/svn/trunk/camel-jmx</connection>
       <developerConnection>scm:svn:https://camel-jmx.googlecode.com/svn/trunk/camel-jmx</developerConnection>
