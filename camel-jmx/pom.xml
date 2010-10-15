@@ -5,6 +5,12 @@
    <artifactId>camel-jmx</artifactId>
    <version>1.0-SNAPSHOT</version>
 
+   <scm>
+      <connection>scm:svn:http://camel-jmx.googlecode.com/svn/trunk/camel-jmx</connection>
+      <developerConnection>scm:svn:https://camel-jmx.googlecode.com/svn/trunk/camel-jmx</developerConnection>
+      <url>http://camel-jmx.googlecode.com/svn/trunk/camel-jmx</url>
+   </scm>
+
    <repositories>
       <repository>
          <id>camel-jmx</id>
