@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    targetNamespace="http://code.massfords.com/camel-jmx"
+    xmlns:tns="http://code.massfords.com/camel-jmx" elementFormDefault="qualified">
+    
+    <xs:complexType name="notificationEventType">
+        <xs:sequence>
+            <xs:element name="source" type="xs:string"/>
+            <xs:element name="message" type="xs:string"/>
+            <xs:element name="sequence" type="xs:long"/>
+            <xs:element name="timestamp" type="xs:long"/>
+            <xs:element name="dateTime" type="xs:dateTime"/>
+            <xs:element name="type" type="xs:string"/>
+            <xs:element name="userData" type="xs:string" minOccurs="0"/>
+        </xs:sequence>
+    </xs:complexType>
+    
+    <xs:element name="notificationEvent" type="tns:notificationEventType"/>
+    
+    <xs:element name="attributeChangeNotification">
+        <xs:complexType>
+            <xs:complexContent>
+                <xs:extension base="tns:notificationEventType">
+                    <xs:sequence>
+                        <xs:element name="attributeName" type="xs:string"/>
+                        <xs:element name="attributeType" type="xs:string"/>
+                        <xs:element name="newValue" type="xs:string" nillable="true"/>
+                        <xs:element name="oldValue" type="xs:string" nillable="true"/>
+                    </xs:sequence>
+                </xs:extension>
+            </xs:complexContent>
+        </xs:complexType>
+    </xs:element>
+    
+    <xs:element name="JMXConnectionNotification">
+        <xs:complexType>
+            <xs:complexContent>
+                <xs:extension base="tns:notificationEventType">
+                    <xs:sequence>
+                        <xs:element name="connectionId" type="xs:string"/>
+                    </xs:sequence>
+                </xs:extension>
+            </xs:complexContent>
+        </xs:complexType>
+    </xs:element>
+    
+    <xs:element name="MBeanServerNotification">
+        <xs:complexType>
+            <xs:complexContent>
+                <xs:extension base="tns:notificationEventType">
+                    <xs:sequence>
+                        <xs:element name="MBeanName" type="xs:string"/>
+                    </xs:sequence>
+                </xs:extension>
+            </xs:complexContent>
+        </xs:complexType>
+    </xs:element>
+    
+    <xs:element name="MonitorNotification">
+        <xs:complexType>
+            <xs:complexContent>
+                <xs:extension base="tns:notificationEventType">
+                    <xs:sequence>
+                        <xs:element name="derivedGauge" type="xs:string"/>
+                        <xs:element name="observedAttribute" type="xs:string"/>
+                        <xs:element name="observedObject" type="xs:string"/>
+                        <xs:element name="trigger" type="xs:string"/>
+                    </xs:sequence>
+                </xs:extension>
+            </xs:complexContent>
+        </xs:complexType>
+    </xs:element>
+    
+    <xs:element name="RelationNotification">
+        <xs:complexType>
+            <xs:complexContent>
+                <xs:extension base="tns:notificationEventType">
+                    <xs:sequence>
+                        <xs:element name="objectName" type="xs:string"/>
+                        <xs:element name="relationId" type="xs:string"/>
+                        <xs:element name="relationTypeName" type="xs:string"/>
+                        <xs:element name="roleName" type="xs:string" minOccurs="0"/>
+                        <xs:element name="MBeansToUnregister" minOccurs="0">
+                            <xs:complexType>
+                                <xs:sequence>
+                                    <xs:element name="objectName" type="xs:string" maxOccurs="unbounded"/>
+                                </xs:sequence>
+                            </xs:complexType>
+                        </xs:element>
+                        <xs:element name="newRoleValue" minOccurs="0">
+                            <xs:complexType>
+                                <xs:sequence>
+                                    <xs:element name="objectName" type="xs:string" maxOccurs="unbounded"/>
+                                </xs:sequence>
+                            </xs:complexType>
+                        </xs:element>
+                        <xs:element name="oldRoleValue" minOccurs="0">
+                            <xs:complexType>
+                                <xs:sequence>
+                                    <xs:element name="objectName" type="xs:string" maxOccurs="unbounded"/>
+                                </xs:sequence>
+                            </xs:complexType>
+                        </xs:element>
+                    </xs:sequence>
+                </xs:extension>
+            </xs:complexContent>
+        </xs:complexType>
+    </xs:element>
+    
+    <xs:element name="TimerNotification">
+        <xs:complexType>
+            <xs:complexContent>
+                <xs:extension base="tns:notificationEventType">
+                    <xs:sequence>
+                        <xs:element name="notificationId" type="xs:int"/>
+                    </xs:sequence>
+                </xs:extension>
+            </xs:complexContent>
+        </xs:complexType>
+    </xs:element>
+    
+</xs:schema>
+
+
