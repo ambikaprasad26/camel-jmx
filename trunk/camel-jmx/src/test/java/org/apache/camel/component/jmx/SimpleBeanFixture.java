@@ -5,18 +5,17 @@ import static org.junit.Assert.assertNotNull;
 
 import java.io.File;
 import java.lang.management.ManagementFactory;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import javax.management.InstanceAlreadyExistsException;
 import javax.management.InstanceNotFoundException;
 import javax.management.JMX;
 import javax.management.MBeanRegistrationException;
 import javax.management.MBeanServer;
 import javax.management.MalformedObjectNameException;
-import javax.management.NotCompliantMBeanException;
 import javax.management.ObjectName;
 
 import org.apache.camel.Exchange;
@@ -50,9 +49,11 @@ public class SimpleBeanFixture {
     private SimpleRegistry mRegistry = new SimpleRegistry();
     /** destination for the simple route created. */
     private MockEndpoint mMockEndpoint;
+    MBeanServer server;
 
     @Before
     public void setUp() throws Exception {
+        initServer();
     	initBean();
     	initRegistry();
     	initContext();
@@ -78,18 +79,19 @@ public class SimpleBeanFixture {
         mMockEndpoint.await(10, TimeUnit.SECONDS);
         assertEquals("Expected number of messages didn't arrive before timeout", aMockEndpoint.getExpectedCount(), aMockEndpoint.getReceivedCounter());
     }
+    
+    protected void initServer() throws Exception {
+        server = ManagementFactory.getPlatformMBeanServer();
+    }
 
     /**
      * Registers the bean on the platform mbean server
      * @param aBean
      * @param aObjectName
-     * @throws NotCompliantMBeanException 
-     * @throws MBeanRegistrationException 
-     * @throws InstanceAlreadyExistsException 
+     * @throws Exception 
      */
-    protected void registerBean(Object aBean, ObjectName aObjectName) throws InstanceAlreadyExistsException, MBeanRegistrationException, NotCompliantMBeanException  {
-    	MBeanServer mbeanServer = ManagementFactory.getPlatformMBeanServer();
-    	mbeanServer.registerMBean(aBean, aObjectName);
+    protected void registerBean(Object aBean, ObjectName aObjectName) throws Exception  {
+    	server.registerMBean(aBean, aObjectName);
     }
 
     /**
@@ -99,8 +101,7 @@ public class SimpleBeanFixture {
      * @throws MBeanRegistrationException 
      */
     protected void unregisterBean(ObjectName aObjectName) throws MBeanRegistrationException, InstanceNotFoundException   {
-    	MBeanServer mbeanServer = ManagementFactory.getPlatformMBeanServer();
-    	mbeanServer.unregisterMBean(aObjectName);
+    	server.unregisterMBean(aObjectName);
     }
 
     /**
@@ -108,7 +109,7 @@ public class SimpleBeanFixture {
      * @param aObjectName
      */
     protected ISimpleMXBean getMXBean(ObjectName aObjectName)  {
-    	ISimpleMXBean simpleBean = JMX.newMXBeanProxy(ManagementFactory.getPlatformMBeanServer(),
+    	ISimpleMXBean simpleBean = JMX.newMXBeanProxy(server,
     			aObjectName, ISimpleMXBean.class);
     	return simpleBean;
     }
@@ -170,13 +171,16 @@ public class SimpleBeanFixture {
      * @throws Exception
      */
     protected void initBean() throws Exception  {
+        registerBean(createSimpleBean(), makeObjectName("simpleBean"));
+    }
+
+    protected SimpleBean createSimpleBean() throws ParseException {
         SimpleBean simpleBean = new SimpleBean();
     
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-dd-MM'T'HH:mm:ss");
         Date date = sdf.parse("2010-07-01T10:30:15");
         simpleBean.setTimestamp(date.getTime());
-        
-        registerBean(simpleBean, makeObjectName("simpleBean"));
+        return simpleBean;
     }
 
     /**
